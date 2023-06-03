@@ -23,7 +23,12 @@ class Anket:
             qanswer = self.answers[i]
             print(f"i={i} {qanswer} {qtype}")
             if qtype == 'closed':
-                self.scores += 1 if qanswer == 'Да' else 0
+                if qanswer == 'Да':
+                    self.scores += 1
+
+                else:
+                    self.scores += 0
+
             if qtype == 'multiple_choice':
                 # print("Score for q: ", questions[i]['options'].index(qanswer))
                 self.scores += questions[i]['options'].index(qanswer)

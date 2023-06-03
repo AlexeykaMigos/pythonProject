@@ -1,10 +1,13 @@
 from telebot import types, telebot
 import json
+
+from dto import base
 from poll.anket import anket
 from poll.config import questions
 from telebot.storage import StateMemoryStorage
+from dto.base import DbConnection
 import logging
-
+db = DbConnection()
 state_storage = StateMemoryStorage()
 
 logging.basicConfig(level=logging.INFO)
@@ -39,9 +42,12 @@ def callback_inline(call):
         answers.append(answer)  # Записываем ответ на предыдущий вопрос
     if k == anket.length:
         score = anket.add_answers(answers)
+        print(answers)
+        db.insert_user(answers[0],call.from_user.id, answers)
         return bot.edit_message_text(chat_id=call.message.chat.id,
                                      message_id=call.message.message_id,
                                      text=f'спасибо за ответы, вы набрали: {score} баллов')
+
 
     if anket.config[k].get('type') == 'opened':
         msg = bot.send_message(chat_id=call.message.chat.id, text=anket.get_question(k))
@@ -52,6 +58,10 @@ def callback_inline(call):
                               message_id=call.message.message_id,
                               text=anket.get_question(k),
                               reply_markup=gen_markup(button_column, k))
+
+
+
+    #print(answers)
 
 
 def openaAnswer(message, k):
