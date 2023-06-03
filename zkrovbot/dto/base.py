@@ -7,6 +7,7 @@ from poll.anket import *
 
 class DbConnection:
     def __init__(self):
+        self.db = TinyDB('db.json', indent=4, separators=(',', ': '), ensure_ascii=False)
         self.db = TinyDB('db.json')
         self.questions = self.db.table('Questions')
         self.users_data = self.db.table('Users')
