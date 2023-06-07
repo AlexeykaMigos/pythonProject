@@ -1,5 +1,7 @@
 from .config import questions
 from dto.base import db
+
+
 class Anket:
     def __init__(self, config):
         self.config = config
@@ -15,15 +17,12 @@ class Anket:
         return self.scores
 
     def get_question(self, k):
-      return db.get_text_by_id(k)
-
-
-
+        return db.get_text_by_id(k)
 
     def _counter(self):
         for i in range(self.length):
             qtype = db.get_type_by_id(i)
-            qoptions =  db.get_options_by_id(i)
+            qoptions = db.get_options_by_id(i)
             qanswer = self.answers[i]
             print(f"i={i} {qanswer} {qtype}")
             if qtype == 'closed':
@@ -40,5 +39,24 @@ class Anket:
             if qtype == 'opened':
                 pass
         print(self.scores)
+
+    def get_score(self, chat_id: int):
+        answers = db.get_user_answers(chat_id)
+        print("GOT ANSWERS", answers)
+        score = 0
+        for i in range(len(answers)):
+            qtype = db.get_type_by_id(i)
+            print(f"i={i} {answers[i]} {qtype}")
+            if qtype == 'closed':
+                score += 1 if answers[i] == 'Да' else 0
+            if qtype == 'multiple_choice':
+                print("options: ", db.get_options_by_id(i + 1))
+                score += db.get_options_by_id(i + 1).index(answers[i])
+            if qtype == 'number':
+                pass
+            if qtype == 'opened':
+                pass
+        return score
+
 
 anket = Anket(questions)
