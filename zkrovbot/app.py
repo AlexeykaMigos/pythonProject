@@ -44,11 +44,11 @@ def callback_inline(call):
                                      message_id=call.message.message_id,
                                      text=f'спасибо за ответы, вы набрали: {score} баллов')
 
-    if anket.config[k].get('type') == 'opened':
+    if db.get_type_by_id(k) == 'opened':
         msg = bot.send_message(chat_id=call.message.chat.id, text=anket.get_question(k))
         bot.register_next_step_handler(msg, openaAnswer, k)
     else:
-        button_column = anket.config[k]['options']
+        button_column = db.get_options_by_id(k)
         bot.edit_message_text(chat_id=call.message.chat.id,
                               message_id=call.message.message_id,
                               text=anket.get_question(k),
@@ -62,8 +62,8 @@ def openaAnswer(message, k):
     if k == 1:
         print(f"add user {message.text}")
         db.insert_user(message.text, message.from_user.id)
-    button_column = anket.config[k]['options']
-    if anket.config[k].get('type') == 'opened':
+    button_column = db.get_options_by_id(k)
+    if db.get_type_by_id(k) == 'opened':
         msg = bot.send_message(chat_id=message.chat.id, text=anket.get_question(k))
         bot.register_next_step_handler(msg, openaAnswer, k)
     else:
